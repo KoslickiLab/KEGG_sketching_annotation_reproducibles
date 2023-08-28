@@ -1,0 +1,163 @@
+script_dir = '../scripts'
+data_dir = 'data'
+kofam_location = '/home/grads/mbr5797/kofamscan/bin/kofamscan/exec_annotation'
+kofam_config_location = '/home/grads/mbr5797/kofamscan/bin/kofamscan/config.yml'
+protein_ref_db = '/scratch/mbr5797/protein_ref_db_giant.faa'
+present_genes_filename = "/scratch/mbr5797/genomes_extracted_from_kegg/present_genes_and_koids.csv"
+ko_sig_file = "/scratch/mbr5797/KOs_sketched/KOs_sketched_scaled_1000.sig.zip"
+
+read_length = 150
+ref_scale = 1000
+query_scale = 1000
+threshold_bp = 5
+num_organisms = 1000
+num_genomes_full_db = 1000
+num_genomes_truncated_db = 1000
+genome_path = '/scratch/mbr5797/genomes_extracted_from_kegg'
+#num_reads_list = [str((i+1)*10000) for i in range(5)]
+num_reads_list = [str((i+1)*1000000) for i in range(10)]
+seeds_list = [str(i) for i in range(10)]
+kmer_sizes = [str(ksize) for ksize in [7, 11, 15] ]
+k = 7
+
+pident_threshold = 0.1
+
+num_threads_diamond = 64
+
+rule all:
+    input:
+        expand(data_dir+'/diamond_performance_metrics_num_reads_{num_reads}_seed_{seed}', num_reads=num_reads_list, seed=seeds_list),
+        expand(data_dir+'/sourmash_performance_metrics_num_reads_{num_reads}_seed_{seed}_k_{k}', num_reads=num_reads_list, seed=seeds_list, k=kmer_sizes)
+
+rule all_kofam:
+    input:
+        expand(data_dir+'/kofam_performance_metrics_num_reads_{num_reads}_seed_{seed}', num_reads=num_reads_list, seed=seeds_list)
+
+rule get_kofam_perf_metrics:
+    input:
+        script_dir+'/calculate_tool_KO_performance.py',
+        data_dir+'/kofam_ko_output_num_reads_{num_reads}_seed_{seed}',
+        data_dir+'/ground_truth_num_reads_{num_reads}_seed_{seed}.csv'
+    output:
+        data_dir+'/kofam_performance_metrics_num_reads_{num_reads}_seed_{seed}'
+    shell:
+        'python {input[0]} ' + data_dir+'/ground_truth_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}.csv' + ' ' + data_dir+'/kofam_ko_output_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}' + ' ' + data_dir+'/kofam_performance_metrics_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}'
+
+rule parse_kofam_output:
+    input:
+        data_dir+'/kofam_output_num_reads_{num_reads}_seed_{seed}'
+    output:
+        data_dir+'/kofam_ko_output_num_reads_{num_reads}_seed_{seed}'
+    shell:
+        'python {script_dir}/parse_kofam_output_file.py ' + data_dir+'/kofam_output_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}' + ' ' + data_dir+'/kofam_ko_output_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}'
+
+rule run_kofam:
+    input:
+        data_dir+'/simulated_metagenome_num_reads_{num_reads}_seed_{seed}.fasta'
+    output:
+        data_dir+'/kofam_output_num_reads_{num_reads}_seed_{seed}'
+    benchmark:
+        data_dir+'/kofam_benchmark_num_reads_{num_reads}_seed_{seed}'
+    shell:
+        kofam_location + ' -o ' + data_dir+'/kofam_output_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}' + ' -c ' + kofam_config_location + ' ' + data_dir+'/simulated_metagenome_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}.fasta'
+
+rule get_diamond_perf_metrics:
+    input:
+        script_dir+'/calculate_tool_KO_performance.py',
+        data_dir+'/diamond_output_file_num_reads_{num_reads}_seed_{seed}',
+        data_dir+'/ground_truth_num_reads_{num_reads}_seed_{seed}.csv',
+        data_dir+'/diamond_ko_file_num_reads_{num_reads}_seed_{seed}'
+    output:
+        data_dir+'/diamond_performance_metrics_num_reads_{num_reads}_seed_{seed}'
+    shell:
+        'python {input[0]} ' + data_dir+'/ground_truth_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}.csv' + ' ' + data_dir+'/diamond_ko_file_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}' + ' ' + data_dir+'/diamond_performance_metrics_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}'
+
+rule run_diamond:
+    input:
+        script_dir+'/run_diamond_for_ko.py',
+        data_dir+'/simulated_metagenome_num_reads_{num_reads}_seed_{seed}.fastq',
+        protein_ref_db
+    output:
+        data_dir+'/diamond_output_file_num_reads_{num_reads}_seed_{seed}',
+        data_dir+'/diamond_ko_file_num_reads_{num_reads}_seed_{seed}'
+    benchmark:
+        data_dir+'/diamond_benchmark_num_reads_{num_reads}_seed_{seed}'
+    shell:
+        '{input[0]} -r {input[2]} -m ' + data_dir+'/simulated_metagenome_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}.fastq -o ' + data_dir + ' -d ' + data_dir+'/diamond_output_file_num_reads_{wildcards.num_reads}_seed_{wildcards.seed} -k ' + data_dir+'/diamond_ko_file_num_reads_{wildcards.num_reads}_seed_{wildcards.seed} -p ' + present_genes_filename + ' -t ' + str(pident_threshold) + ' --num_threads ' + str(num_threads_diamond)
+
+rule get_sourmash_perf_metrics:
+    input:
+        script_dir+'/calculate_tool_KO_performance.py',
+        data_dir+'/ground_truth_num_reads_{num_reads}_seed_{seed}.csv',
+        data_dir+'/sourmash_gather_num_reads_{num_reads}_seed_{seed}_k_{k}',
+        data_dir+'/sourmash_kos_{num_reads}_seed_{seed}_k_{k}'
+    output:
+        data_dir+'/sourmash_performance_metrics_num_reads_{num_reads}_seed_{seed}_k_{k}'
+    shell:
+        'python {input[0]} ' + data_dir+'/ground_truth_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}.csv' + ' ' + data_dir+'/sourmash_kos_{wildcards.num_reads}_seed_{wildcards.seed}_k_{wildcards.k}' + ' ' + data_dir+'/sourmash_performance_metrics_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}_k_{wildcards.k}'
+
+
+rule run_sourmash:
+    input:
+        script_dir + '/run_sourmash_gather.py',
+        ko_sig_file,
+        data_dir + '/simulated_metagenome_num_reads_{num_reads}_seed_{seed}.fastq'
+    output:
+        data_dir+'/sourmash_gather_num_reads_{num_reads}_seed_{seed}_k_{k}',
+        data_dir+'/sourmash_kos_{num_reads}_seed_{seed}_k_{k}'
+    benchmark:
+        data_dir + "/sourmash_gather_benchmark_{num_reads}_seed_{seed}_k_{k}"
+    shell:
+        'python {input[0]} --ksize {wildcards.k} --threshold ' + str(threshold_bp) + ' --metagenome ' + data_dir+'/simulated_metagenome_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}.fastq' + ' --kosig ' + ko_sig_file + ' --gatherfile ' + data_dir+'/sourmash_gather_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}_k_{wildcards.k}' + ' --outfile ' + data_dir+'/sourmash_kos_{wildcards.num_reads}_seed_{wildcards.seed}_k_{wildcards.k}' + ' --scaled ' + str(query_scale)
+
+rule create_all_ko_ground_truths:
+    input:
+        expand(data_dir+'/ground_truth_num_reads_{num_reads}_seed_{seed}.csv', num_reads=num_reads_list, seed=seeds_list)
+
+rule create_ground_truth_ko:
+    input:
+        script_dir + '/create_ko_ground_truth.py',
+        data_dir+'/ground_truth_gene_num_reads_{num_reads}_seed_{seed}.csv'
+    output:
+        data_dir+'/ground_truth_num_reads_{num_reads}_seed_{seed}.csv'
+    shell:
+        'python {input[0]} --present_genes ' + present_genes_filename + ' --gene_abundance ' + data_dir+'/ground_truth_gene_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}.csv' + ' --out_file ' + data_dir+'/ground_truth_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}.csv'
+
+rule create_ground_truth:
+    input:
+        script_dir + '/find_genes_in_sim.py',
+        data_dir + '/simulated_metagenome_num_reads_{num_reads}_seed_{seed}.fastq'
+    output:
+        data_dir+'/ground_truth_gene_num_reads_{num_reads}_seed_{seed}.csv'
+    shell:
+        'python {input[0]} --database_dir ' + genome_path + ' --simulation ' + data_dir + '/simulated_metagenome_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}.fastq --output_file ' + data_dir + '/ground_truth_gene_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}.csv' + ' --num_genomes ' + str(num_genomes_full_db)
+
+rule create_all_metagenomes:
+    input:
+        expand(data_dir + '/simulated_metagenome_num_reads_{num_reads}_seed_{seed}.fasta', num_reads=num_reads_list, seed=seeds_list)
+
+rule create_fasta:
+    input:
+        data_dir + '/simulated_metagenome_num_reads_{num_reads}_seed_{seed}.fastq'
+    output:
+        data_dir + '/simulated_metagenome_num_reads_{num_reads}_seed_{seed}.fasta'
+    shell:
+        'sed -n \'1~4s/^@/>/p;2~4p\' {input[0]} > {output[0]}'
+
+rule create_metagenomes:
+    input:
+        script_dir + '/simulate_metagenome.py',
+        data_dir + '/genome_ref_full.fa'
+    output:
+        data_dir + '/simulated_metagenome_num_reads_{num_reads}_seed_{seed}.fastq'
+    shell:
+        "python {input[0]} -r {input[1]} -o " + data_dir + "/simulated_metagenome_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}.fastq -n {wildcards.num_reads} -l " + str(read_length) + " --num_orgs " + str(num_organisms) + ' --seed {wildcards.seed}'
+
+rule setup_initials:
+    input:
+        "setup.sh",
+        script_dir + '/create_genome_ref_db.py'
+    output:
+        data_dir + '/genome_ref_full.fa'
+    shell:
+        'bash {input[0]} ' + script_dir + ' ' + data_dir + ' ' + str(num_genomes_full_db) + ' ' + str(num_genomes_truncated_db) + ' ' + str(read_length) + ' ' + str(k) + ' ' + str(ref_scale) + ' ' + str(query_scale) + ' ' + str(threshold_bp) + ' ' + genome_path
