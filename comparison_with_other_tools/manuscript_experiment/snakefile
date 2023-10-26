@@ -1,19 +1,21 @@
-script_dir = '../scripts'
-data_dir = 'data'
 kofam_location = '/home/grads/mbr5797/kofamscan/bin/kofamscan/exec_annotation'
 kofam_config_location = '/home/grads/mbr5797/kofamscan/bin/kofamscan/config.yml'
 protein_ref_db = '/scratch/mbr5797/protein_ref_db_giant.faa'
 present_genes_filename = "/scratch/mbr5797/genomes_extracted_from_kegg/present_genes_and_koids.csv"
 ko_sig_file = "/scratch/mbr5797/KOs_sketched/KOs_sketched_scaled_1000.sig.zip"
+ko_sbt_file_prefix = "/scratch/mbr5797/KOs_sketched/KOs_sbt_scaled_1000_k_"
+genome_path = '/scratch/mbr5797/genomes_extracted_from_kegg'
+
+script_dir = '../scripts'
+data_dir = 'data'
 
 read_length = 150
 ref_scale = 1000
 query_scale = 1000
-threshold_bp = 5
+threshold_bp = 1000
 num_organisms = 1000
 num_genomes_full_db = 1000
 num_genomes_truncated_db = 1000
-genome_path = '/scratch/mbr5797/genomes_extracted_from_kegg'
 #num_reads_list = [str((i+1)*10000) for i in range(5)]
 num_reads_list = [str((i+1)*1000000) for i in range(10)]
 seeds_list = [str(i) for i in range(10)]
@@ -22,7 +24,7 @@ k = 7
 
 pident_threshold = 0.1
 
-num_threads_diamond = 64
+num_threads_diamond = 32
 
 rule all:
     input:
@@ -105,10 +107,12 @@ rule run_sourmash:
     output:
         data_dir+'/sourmash_gather_num_reads_{num_reads}_seed_{seed}_k_{k}',
         data_dir+'/sourmash_kos_{num_reads}_seed_{seed}_k_{k}'
+    resources:
+        mem_mb=4000
     benchmark:
         data_dir + "/sourmash_gather_benchmark_{num_reads}_seed_{seed}_k_{k}"
     shell:
-        'python {input[0]} --ksize {wildcards.k} --threshold ' + str(threshold_bp) + ' --metagenome ' + data_dir+'/simulated_metagenome_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}.fastq' + ' --kosig ' + ko_sig_file + ' --gatherfile ' + data_dir+'/sourmash_gather_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}_k_{wildcards.k}' + ' --outfile ' + data_dir+'/sourmash_kos_{wildcards.num_reads}_seed_{wildcards.seed}_k_{wildcards.k}' + ' --scaled ' + str(query_scale)
+        'python {input[0]} --ksize {wildcards.k} --threshold ' + str(threshold_bp) + ' --metagenome ' + data_dir+'/simulated_metagenome_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}.fastq' + ' --kosig ' + f'{ko_sbt_file_prefix}'+'{wildcards.k}.sbt.zip' + ' --gatherfile ' + data_dir+'/sourmash_gather_num_reads_{wildcards.num_reads}_seed_{wildcards.seed}_k_{wildcards.k}' + ' --outfile ' + data_dir+'/sourmash_kos_{wildcards.num_reads}_seed_{wildcards.seed}_k_{wildcards.k}' + ' --scaled ' + str(query_scale)
 
 rule create_all_ko_ground_truths:
     input:

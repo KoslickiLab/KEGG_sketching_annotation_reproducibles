@@ -1,6 +1,6 @@
 import numpy as np
 
-data_dir = 'data_small_sized_metagenomes'
+data_dir = 'data'
 
 read_length = 150
 ref_scale = 1000
@@ -46,6 +46,35 @@ def get_kofam_running_time(num_reads, seed):
 
 def get_all_diamond_running_times(num_reads):
     return [ get_diamond_running_time(num_reads, seed) for seed in seeds_list ]
+
+def get_kofam_cpu_time(num_reads, seed):
+    filename = data_dir+f'/kofam_benchmark_num_reads_{num_reads}_seed_{seed}'
+    f = open(filename, 'r')
+    all_lines = f.readlines()
+    f.close()
+    cpu_time = float(all_lines[1].split('\t')[9])
+    return cpu_time
+
+def get_diamond_cpu_time(num_reads, seed):
+    filename = data_dir+f'/diamond_benchmark_num_reads_{num_reads}_seed_{seed}'
+    f = open(filename, 'r')
+    all_lines = f.readlines()
+    f.close()
+    try:
+        cpu_time = float(all_lines[1].split('\t')[9])
+    except:
+        print(num_reads, seed)
+        print(all_lines[1].split('\t'))
+        exit(-1)
+    return cpu_time
+
+def get_sourmash_cpu_time(num_reads, ksize, seed):
+    filename = data_dir + f"/sourmash_gather_benchmark_{num_reads}_seed_{seed}_k_{ksize}"
+    f = open(filename, 'r')
+    all_lines = f.readlines()
+    f.close()
+    cpu_time = float(all_lines[1].split('\t')[9])
+    return cpu_time
 
 def get_sourmash_running_time(num_reads, ksize, seed):
     filename = data_dir + f"/sourmash_gather_benchmark_{num_reads}_seed_{seed}_k_{ksize}"
@@ -252,5 +281,35 @@ if __name__ == "__main__":
         for num_reads in num_reads_list:
             res = [get_sourmash_running_time(num_reads, k, seed) for seed in seeds_list]
             res = np.log(res) / np.log(10)
+            print(np.std(res), end = ' ')
+        print('')
+
+    print('CPU times (not in logarithm)')
+    for num_reads in num_reads_list:
+        res = [get_diamond_cpu_time(num_reads, seed) for seed in seeds_list]
+        print(np.mean(res), end = ' ')
+    print('')
+    for num_reads in num_reads_list:
+        res = [get_kofam_cpu_time(num_reads, seed) for seed in seeds_list]
+        print(np.mean(res), end = ' ')
+    print('')
+    for k in kmer_sizes:
+        for num_reads in num_reads_list:
+            res = [get_sourmash_cpu_time(num_reads, k, seed) for seed in seeds_list]
+            print(np.mean(res), end = ' ')
+        print('')
+
+    print('Stddevs of CPU times (not in logarithm)')
+    for num_reads in num_reads_list:
+        res = [get_diamond_cpu_time(num_reads, seed) for seed in seeds_list]
+        print(np.std(res), end = ' ')
+    print('')
+    for num_reads in num_reads_list:
+        res = [get_kofam_cpu_time(num_reads, seed) for seed in seeds_list]
+        print(np.std(res), end = ' ')
+    print('')
+    for k in kmer_sizes:
+        for num_reads in num_reads_list:
+            res = [get_sourmash_cpu_time(num_reads, k, seed) for seed in seeds_list]
             print(np.std(res), end = ' ')
         print('')
