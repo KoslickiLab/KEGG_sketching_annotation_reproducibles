@@ -1,5 +1,4 @@
-# KEGG-sketch-each-KO
-This repository gives instructions on how to reproduce the results for the comparison of sourmash with KofamScan and Diamond.
+This file gives instructions on how to reproduce the results for the comparison of sourmash with KofamScan and Diamond.
 
 ## Installation
 
@@ -22,20 +21,31 @@ After installing KofamScan, we need to know:
 ### Installing Diamond
 Diamond comes pre-built with the repository (designed for a linux system).
 
-## Downloading resource
+## Downloading resources
 Because github has a limit on the file size, we have put some files on Zenodo. Plese use the following steps to obtain these files:
-1. Protein reference database:
-1. List of genes present in the KEGG database, and their KOIDs:
-1. Sequence bloom tree of the KO sketches:
+```
+mkdir required_files
+cd required_files
+wget https://zenodo.org/records/10055954/files/genomes_extracted_from_kegg.zip?download=1
+wget https://zenodo.org/records/10055954/files/KOs_sbt_scaled_1000_k_11.sbt.zip?download=1
+wget https://zenodo.org/records/10055954/files/KOs_sbt_scaled_1000_k_15.sbt.zip?download=1
+wget https://zenodo.org/records/10055954/files/KOs_sbt_scaled_1000_k_7.sbt.zip?download=1
+wget https://zenodo.org/records/10055954/files/present_genes_and_koids.csv?download=1
+wget https://zenodo.org/records/10055954/files/protein_ref_db_giant.faa?download=1
+unzip genomes_extracted_from_kegg.zip
+```
 
 ## How to run?
 After installing, we need to do the following:
 1. `cd manuscript_experiment`
-1. Edit the file named `snakefile` and write the full path to all resources that have been downloaded/installed
-1. `snakemake create_all_metagenomes -j <num_cores_to_use>`
-1. `snakemake create_all_ko_ground_truths -j <num_cores_to_use>`
-1. `snakemake all_kofam -j <num_cores_to_use>`
-1. `snakemake all -j <num_cores_to_use>`
+1. Edit the file named `snakefile` and write the full path to KofamScan locations. Also, add the path where required files have been downloaded.
+1. Run the following code:
+```
+snakemake create_all_metagenomes -j <num_cores_to_use>
+snakemake create_all_ko_ground_truths -j <num_cores_to_use>
+snakemake all_kofam -j <num_cores_to_use>
+snakemake all -j <num_cores_to_use>
+```
 
 
 ## Plotting

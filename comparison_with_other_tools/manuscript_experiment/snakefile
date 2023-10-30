@@ -1,9 +1,13 @@
-kofam_location = '/home/grads/mbr5797/kofamscan/bin/kofamscan/exec_annotation'
-kofam_config_location = '/home/grads/mbr5797/kofamscan/bin/kofamscan/config.yml'
-protein_ref_db = '/scratch/mbr5797/protein_ref_db_giant.faa'
-present_genes_filename = "/scratch/mbr5797/genomes_extracted_from_kegg/present_genes_and_koids.csv"
-ko_sbt_file_prefix = "/scratch/mbr5797/KOs_sketched/KOs_sbt_scaled_1000_k_"
-genome_path = '/scratch/mbr5797/genomes_extracted_from_kegg'
+# TODOs start
+kofam_location = 'todo'
+kofam_config_location = 'todo'
+path_to_required_files = 'todo'
+# TODOs end
+
+protein_ref_db = path_to_required_files + '/protein_ref_db_giant.faa'
+present_genes_filename = path_to_required_files + "/present_genes_and_koids.csv"
+ko_sbt_file_prefix = path_to_required_files + "/KOs_sbt_scaled_1000_k_"
+genome_path = path_to_required_files + '/genomes_extracted_from_kegg'
 
 script_dir = '../scripts'
 data_dir = 'data'
@@ -15,8 +19,8 @@ threshold_bp = 1000
 num_organisms = 1000
 num_genomes_full_db = 1000
 num_genomes_truncated_db = 1000
-#num_reads_list = [str((i+1)*10000) for i in range(5)]
-num_reads_list = [str((i+1)*1000000) for i in range(10)]
+num_reads_list_small = [str((i+1)*10000) for i in range(5)]
+num_reads_list_large = [str((i+1)*1000000) for i in range(10)]
 seeds_list = [str(i) for i in range(10)]
 kmer_sizes = [str(ksize) for ksize in [7, 11, 15] ]
 k = 7
@@ -27,12 +31,14 @@ num_threads_diamond = 32
 
 rule all:
     input:
-        expand(data_dir+'/diamond_performance_metrics_num_reads_{num_reads}_seed_{seed}', num_reads=num_reads_list, seed=seeds_list),
-        expand(data_dir+'/sourmash_performance_metrics_num_reads_{num_reads}_seed_{seed}_k_{k}', num_reads=num_reads_list, seed=seeds_list, k=kmer_sizes)
+        expand(data_dir+'/diamond_performance_metrics_num_reads_{num_reads}_seed_{seed}', num_reads=num_reads_list_small, seed=seeds_list),
+        expand(data_dir+'/sourmash_performance_metrics_num_reads_{num_reads}_seed_{seed}_k_{k}', num_reads=num_reads_list_small, seed=seeds_list, k=kmer_sizes),
+        expand(data_dir+'/diamond_performance_metrics_num_reads_{num_reads}_seed_{seed}', num_reads=num_reads_list_large, seed=seeds_list),
+        expand(data_dir+'/sourmash_performance_metrics_num_reads_{num_reads}_seed_{seed}_k_{k}', num_reads=num_reads_list_large, seed=seeds_list, k=kmer_sizes)
 
 rule all_kofam:
     input:
-        expand(data_dir+'/kofam_performance_metrics_num_reads_{num_reads}_seed_{seed}', num_reads=num_reads_list, seed=seeds_list)
+        expand(data_dir+'/kofam_performance_metrics_num_reads_{num_reads}_seed_{seed}', num_reads=num_reads_list_small, seed=seeds_list)
 
 rule get_kofam_perf_metrics:
     input:
@@ -114,7 +120,8 @@ rule run_sourmash:
 
 rule create_all_ko_ground_truths:
     input:
-        expand(data_dir+'/ground_truth_num_reads_{num_reads}_seed_{seed}.csv', num_reads=num_reads_list, seed=seeds_list)
+        expand(data_dir+'/ground_truth_num_reads_{num_reads}_seed_{seed}.csv', num_reads=num_reads_list_small, seed=seeds_list),
+        expand(data_dir+'/ground_truth_num_reads_{num_reads}_seed_{seed}.csv', num_reads=num_reads_list_large, seed=seeds_list)
 
 rule create_ground_truth_ko:
     input:
@@ -136,7 +143,8 @@ rule create_ground_truth:
 
 rule create_all_metagenomes:
     input:
-        expand(data_dir + '/simulated_metagenome_num_reads_{num_reads}_seed_{seed}.fasta', num_reads=num_reads_list, seed=seeds_list)
+        expand(data_dir + '/simulated_metagenome_num_reads_{num_reads}_seed_{seed}.fasta', num_reads=num_reads_list_small, seed=seeds_list),
+        expand(data_dir + '/simulated_metagenome_num_reads_{num_reads}_seed_{seed}.fasta', num_reads=num_reads_list_large, seed=seeds_list)
 
 rule create_fasta:
     input:
