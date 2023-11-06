@@ -12,6 +12,7 @@ conda activate fununifrac
 
 ### 1.2 Compute pairwise FunUniFrac
 ```angular2html
+gunzip part3_FunUniFrac/data/hq_data_t2d_hhs_only.csv.gz
 python FunUniFrac/fununifrac/compute_fununifrac_combined.py -e part3_FunUniFrac/data/kegg_tree.txt -f part3_FunUniFrac/data/hq_data_t2d_hhs_only.csv -o part3_FunUniFrac/data/output -i pw_fununifrac_hhs_vs_t2d
 ```
 This will produce output files `pw_fununifrac_hhs_vs_t2d.npy` and `pw_fununifrac_hhs_vs_t2d.basis.npy` in the part3_FunUniFrac/data/output folder.
