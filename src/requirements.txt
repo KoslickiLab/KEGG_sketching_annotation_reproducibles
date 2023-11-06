@@ -9,3 +9,4 @@ pytest
 sourmash
 line_profiler
 lefse
+seaborn

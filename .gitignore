@@ -6,4 +6,7 @@
 # idea folder by PyCharm
 .idea/
 
+# part2
+part2_analyze_HMP_data/raw_data/
+part2_analyze_HMP_data/merged_df_and_heatmap/
 

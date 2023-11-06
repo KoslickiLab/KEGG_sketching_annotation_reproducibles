@@ -58,7 +58,7 @@ https://github.com/KoslickiLab/KEGG_sketching_annotation_reproducibles/blob/main
 
 This segment replicates the findings presented in **Section 3.2**, where we utilized `sourmash` to get functional profiles of all [HMP](https://portal.hmpdacc.org/) gut microbiome data and further analyzed the outputs. 
 
-Please follow this guideline to reproduce all results (link below):
+Please follow [this guideline](https://github.com/KoslickiLab/KEGG_sketching_annotation_reproducibles/blob/main/part2_analyze_HMP_data/README.md) to reproduce all results (link below):
 
 ```
 https://github.com/KoslickiLab/KEGG_sketching_annotation_reproducibles/blob/main/part2_analyze_HMP_data/README.md
@@ -74,7 +74,7 @@ https://github.com/KoslickiLab/KEGG_sketching_annotation_reproducibles/blob/main
 
 This segment replicates the findings presented in **Section 3.3**, where we demonstrate the usage of [Functional UniFrac](https://github.com/KoslickiLab/FunUniFrac) as a downstream analysis based on the FracMinHash-generated KO profiles. 
 
-Please follow this guideline to reproduce all results (link below):
+Please follow [this guideline](https://github.com/KoslickiLab/KEGG_sketching_annotation_reproducibles/blob/main/) to reproduce all results (link below):
 
 ```
 https://github.com/KoslickiLab/KEGG_sketching_annotation_reproducibles/blob/main/
