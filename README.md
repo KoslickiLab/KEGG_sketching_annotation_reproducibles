@@ -3,8 +3,6 @@
 Reproducible scripts for the manuscript `Fast, lightweight, and accurate metagenomic functional profiling
 using FracMinHash sketches`. The associated preprint will be added soon.
 
-</br>
-
 <!-- TOC start -->
 
 ### Contents:
@@ -63,7 +61,7 @@ This segment replicates the findings presented in **Section 3.2**, where we util
 Please follow this guideline to reproduce all results (link below):
 
 ```
-https://github.com/KoslickiLab/KEGG_sketching_annotation_reproducibles/blob/main/
+https://github.com/KoslickiLab/KEGG_sketching_annotation_reproducibles/blob/main/part2_analyze_HMP_data/README.md
 ```
 
 </br>
