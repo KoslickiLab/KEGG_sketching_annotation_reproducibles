@@ -1,14 +1,6 @@
 This file gives instructions on how to reproduce the results for the comparison of sourmash with KofamScan and Diamond.
 
 ## Installation
-
-### Installing python dependencies
-```
-conda create -y --name annotate_ko
-conda install -y --name annotate_ko -c conda-forge -c bioconda --file requirements.txt
-conda activate annotate_ko
-```
-
 ### Installing KofamScan
 To install KofamScan, please follow the instructions from here:
 ```
