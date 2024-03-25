@@ -42,10 +42,10 @@ The manuscript comprises three distinct experimental sections, with each section
 
 This segment replicates the findings presented in **Section 3.1**, where benchmarking analyses of `sourmash` were conducted in comparison to other tools. 
 
-Please follow [this guideline](https://github.com/KoslickiLab/KEGG_sketching_annotation_reproducibles/blob/main/comparison_with_other_tools/README.md) to reproduce all results (link below):
+Please follow [this guideline](https://github.com/KoslickiLab/KEGG_sketching_annotation_reproducibles/blob/main/part1_comparison_with_other_tools/README.md) to reproduce all results (link below):
 
 ```
-https://github.com/KoslickiLab/KEGG_sketching_annotation_reproducibles/blob/main/comparison_with_other_tools/README.md
+https://github.com/KoslickiLab/KEGG_sketching_annotation_reproducibles/blob/main/part1_comparison_with_other_tools/README.md
 ```
 
 </br>
@@ -74,8 +74,8 @@ https://github.com/KoslickiLab/KEGG_sketching_annotation_reproducibles/blob/main
 
 This segment replicates the findings presented in **Section 3.3**, where we demonstrate the usage of [Functional UniFrac](https://github.com/KoslickiLab/FunUniFrac) as a downstream analysis based on the FracMinHash-generated KO profiles. 
 
-Please follow [this guideline](https://github.com/KoslickiLab/KEGG_sketching_annotation_reproducibles/blob/main/) to reproduce all results (link below):
+Please follow [this guideline](https://github.com/KoslickiLab/KEGG_sketching_annotation_reproducibles/blob/main/part3_FunUniFrac/README.md) to reproduce all results (link below):
 
 ```
-https://github.com/KoslickiLab/KEGG_sketching_annotation_reproducibles/blob/main/
+https://github.com/KoslickiLab/KEGG_sketching_annotation_reproducibles/blob/main/part3_FunUniFrac/README.md
 ```
