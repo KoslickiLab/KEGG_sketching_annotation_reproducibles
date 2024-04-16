@@ -1,4 +1,4 @@
-This file gives instructions on how to reproduce the results for the analysis of HMP datasets in **Section 3.2**.
+This file gives instructions on how to reproduce the results for the analysis of HMP datasets in **Section 3.3**.
 
 </br>
 

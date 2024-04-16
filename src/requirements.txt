@@ -10,3 +10,5 @@ sourmash
 line_profiler
 lefse
 seaborn
+pysam
+diamond

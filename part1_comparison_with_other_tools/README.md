@@ -1,19 +1,6 @@
-This file gives instructions on how to reproduce the results for the comparison of sourmash with KofamScan and Diamond.
+This file gives instructions on how to generate the plots in **Section 3.1** and **Section 3.2**.
 
-## Installation
-### Installing KofamScan
-To install KofamScan, please follow the instructions from here:
-```
-https://www.genome.jp/ftp/tools/kofam_scan/INSTALL
-```
-After installing KofamScan, we need to know:
-1. Location of the executable: this is the path to the exec_annotation file
-1. Location of the KofamScan config file
-
-### Installing Diamond
-Diamond comes pre-built with the repository (designed for a linux system).
-
-## Downloading resources
+## Step 1: download resources
 Because github has a limit on the file size, we have put some files on Zenodo. Plese use the following steps to obtain these files:
 ```
 mkdir required_files
@@ -27,24 +14,44 @@ wget https://zenodo.org/records/10055954/files/protein_ref_db_giant.faa?download
 unzip genomes_extracted_from_kegg.zip
 ```
 
-## How to run?
-After installing, we need to do the following:
-1. `cd manuscript_experiment`
-1. Edit the file named `snakefile` and write the full path to KofamScan locations. Also, add the path where required files have been downloaded.
-1. Run the following code:
+## Step 2: set up environment
+1. Clone the camisim repository from here: https://github.com/CAMI-challenge/CAMISIM
+1. Change the hardcoded items in `run_camisim.py`. Every path must be absolute path
+1. Change the hardcoded items in `run_tools/run_sourmash/run_sourmash_batch.py`
+1. Change the hardcoded items in `run_simulations/run_sourmash.py`
+
+## Step 3: run camisim to generate the simulated metagenomes
 ```
-snakemake create_all_metagenomes -j <num_cores_to_use>
-snakemake create_all_ko_ground_truths -j <num_cores_to_use>
-snakemake all_kofam -j <num_cores_to_use>
-snakemake all -j <num_cores_to_use>
+cd run_simulations/vary_error_rates
+python run_simulation.py
+bash run_simulation.sh
 ```
 
-
-## Plotting
-Gather all statistics from all these runs using the following:
+## Step 4: run diamond
 ```
-python aggregate_large_MG_results.py
-python aggregate_small_MG_results.py
+cd run_simulations/vary_error_rates
+python run_diamond_batch.py
+bash run_diamond_batch.sh
 ```
 
-These statistics were plotted using `plotter.m`
+## Step 5: run fmh-funprofiler
+```
+cd run_simulations/vary_error_rates
+python run_sourmash_batch.py
+bash run_sourmash_batch.sh
+```
+
+## Step 6: aggregate all results
+```
+cd run_simulations/vary_error_rates
+python compute_performance_metrics.py
+python summarize_all_results_batch.py
+```
+
+## Step 7: plot
+```
+cd run_simulations/vary_error_rates
+python plot_results.py
+python plot_perf_metrics.py
+```
+
