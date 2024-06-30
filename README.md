@@ -67,15 +67,3 @@ https://github.com/KoslickiLab/KEGG_sketching_annotation_reproducibles/blob/main
 </br>
 
 <!-- TOC --><a name="part-3-functional-unifrac"></a>
-
-### Part 3: functional UniFrac
-
----
-
-This segment replicates the findings presented in **Section 3.3**, where we demonstrate the usage of [Functional UniFrac](https://github.com/KoslickiLab/FunUniFrac) as a downstream analysis based on the FracMinHash-generated KO profiles. 
-
-Please follow [this guideline](https://github.com/KoslickiLab/KEGG_sketching_annotation_reproducibles/blob/main/part3_FunUniFrac/README.md) to reproduce all results (link below):
-
-```
-https://github.com/KoslickiLab/KEGG_sketching_annotation_reproducibles/blob/main/part3_FunUniFrac/README.md
-```
