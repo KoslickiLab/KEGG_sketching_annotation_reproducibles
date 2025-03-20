@@ -83,7 +83,7 @@ bash ./src/build_sourmash_sketch.sh ${single_file_dir} ${target_dir}
 mkdir -p functional_profile
 target_dir=$(readlink -f functional_profile)
 query_sketch_dir=$(readlink -f ./single_FMH_sketch/scale_1000_protein/)
-ref_db=$(readlink -f KOs_sbt_scaled_1000_k_11.sbt.zip)
+ref_db=$(readlink -f KO_AA_sketch_scaled_1000_k_11.sbt.zip)
 
 # generate functional profiles
 bash ./src/sourmash_gather_func_profile.sh ${target_dir} ${query_sketch_dir} ${ref_db}
